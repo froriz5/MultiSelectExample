@@ -8,7 +8,9 @@ import com.feliperoriz.multiselectexample.repository.db.model.NoteEntity
 
 class NotesListViewModel: ViewModel() {
 
-    val dataSourceLiveData: LiveData<PagedList<NoteEntity>> = repository.notesDataSource
+    val dataSourceLiveData: LiveData<PagedList<NoteEntity>> by lazy(LazyThreadSafetyMode.NONE) {
+        repository.notesDataSource
+    }
 
     private lateinit var repository: NotesRepository
 

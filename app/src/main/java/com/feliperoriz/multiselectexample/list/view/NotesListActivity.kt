@@ -6,9 +6,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.LinearLayoutManager
 
 import com.feliperoriz.multiselectexample.R
-import com.feliperoriz.multiselectexample.add.NoteAddActivity
+import com.feliperoriz.multiselectexample.add.view.NoteAddActivity
 import com.feliperoriz.multiselectexample.detail.NoteDetailActivity
 import com.feliperoriz.multiselectexample.list.view.recyclerview.NotesAdapter
 import com.feliperoriz.multiselectexample.list.view.recyclerview.NotesItemCallback
@@ -16,15 +17,13 @@ import com.feliperoriz.multiselectexample.list.viewmodel.NotesListViewModel
 import com.feliperoriz.multiselectexample.repository.NotesRepository
 import com.feliperoriz.multiselectexample.repository.db.NotesDatabase
 
-import io.reactivex.schedulers.Schedulers
-
 import kotlinx.android.synthetic.main.activity_notes_list.*
 
 class NotesListActivity : AppCompatActivity() {
 
     private val repository: NotesRepository by lazy(LazyThreadSafetyMode.NONE) {
         val repoDb = NotesDatabase.getInstance(this).notesDao()
-        NotesRepository(repoDb, Schedulers.io())
+        NotesRepository(repoDb)
     }
 
     private val viewModel: NotesListViewModel by lazy(LazyThreadSafetyMode.NONE) {
@@ -49,13 +48,14 @@ class NotesListActivity : AppCompatActivity() {
     private fun setup() {
         recycler_view.apply {
             setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(this@NotesListActivity)
             adapter = notesAdapter
         }
 
-        notesAdapter.onClickNote = { note ->
-            val intent = NoteDetailActivity.getIntent(this, note.key!!)
-            startActivity(intent)
-        }
+//        notesAdapter.onClickNote = { note ->
+//            val intent = NoteDetailActivity.getIntent(this, note.key!!)
+//            startActivity(intent)
+//        }
 
         add_fab.setOnClickListener {
             val intent = Intent(this, NoteAddActivity::class.java)
@@ -67,9 +67,7 @@ class NotesListActivity : AppCompatActivity() {
     }
 
     private fun setupToolbar() {
-        supportActionBar?.apply {
-            setSupportActionBar(toolbar)
-        }
+        setSupportActionBar(toolbar)
     }
 
     private fun setupObservers() {
