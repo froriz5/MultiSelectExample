@@ -25,4 +25,7 @@ interface NotesDao {
 
     @Query("SELECT * FROM notes WHERE `key` = :key")
     fun getNoteLiveData(key: Long): LiveData<NoteEntity>
+
+    @Query("SELECT COUNT(*) FROM notes WHERE is_selected = 1")
+    fun getSelectedNotesCount(): LiveData<Int>
 }

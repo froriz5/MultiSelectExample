@@ -12,6 +12,7 @@ import io.reactivex.Completable
 class NotesRepository(private val notesDao: NotesDao) {
 
     val notesDataSource: LiveData<PagedList<NoteEntity>>
+    val selectNotesCountLiveData: LiveData<Int> = notesDao.getSelectedNotesCount()
 
     init {
         val dataSource = notesDao.getNotes()

@@ -4,6 +4,9 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
+import androidx.appcompat.view.ActionMode
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,7 +22,42 @@ import com.feliperoriz.multiselectexample.repository.db.NotesDatabase
 
 import kotlinx.android.synthetic.main.activity_notes_list.*
 
-class NotesListActivity : AppCompatActivity() {
+class NotesListActivity : AppCompatActivity(), ActionMode.Callback {
+
+    override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.delete -> {
+                viewModel.deleteSelectedNotes {
+                    mode.finish()
+                }
+                true
+            }
+            else -> false
+        }
+    }
+
+    override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
+        mode.menuInflater.inflate(R.menu.bulk_mode_menu, menu)
+        mode.title = "Select notes"
+
+        return true
+    }
+
+    override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
+        val selectedNotesCount = viewModel.selectNotesCountLiveData.value ?: 0
+        if (selectedNotesCount > 0) {
+            mode.title = "$selectedNotesCount notes selected"
+        } else {
+            mode.title = "Select notes"
+        }
+
+        return true
+    }
+
+    override fun onDestroyActionMode(mode: ActionMode) {
+        actionMode = null
+        notesAdapter.isBulkModeEnabled = false
+    }
 
     private val repository: NotesRepository by lazy(LazyThreadSafetyMode.NONE) {
         val repoDb = NotesDatabase.getInstance(this).notesDao()
@@ -38,6 +76,8 @@ class NotesListActivity : AppCompatActivity() {
         NotesAdapter(layoutInflater, itemCallback)
     }
 
+    private var actionMode: ActionMode? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_notes_list)
@@ -52,17 +92,13 @@ class NotesListActivity : AppCompatActivity() {
             adapter = notesAdapter
         }
 
-        notesAdapter.onClickNote = { note ->
-            val intent = NoteDetailActivity.getIntent(this, note.key!!)
-            startActivity(intent)
-        }
-
         add_fab.setOnClickListener {
             val intent = Intent(this, NoteAddActivity::class.java)
             startActivity(intent)
         }
 
         setupToolbar()
+        setupAdapter()
         setupObservers()
     }
 
@@ -70,9 +106,28 @@ class NotesListActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
     }
 
+    private fun setupAdapter() {
+        notesAdapter.onClickNote = { note ->
+            val intent = NoteDetailActivity.getIntent(this, note.key!!)
+            startActivity(intent)
+        }
+
+        notesAdapter.onBulkModeStarted = {
+            add_fab.hide()
+            actionMode = startSupportActionMode(this)
+        }
+
+        notesAdapter.onBulkModeEnded = {
+            add_fab.show()
+        }
+    }
+
     private fun setupObservers() {
         viewModel.dataSourceLiveData.observe(this, Observer { pagedList ->
             notesAdapter.submitList(pagedList)
+        })
+        viewModel.selectNotesCountLiveData.observe(this, Observer {
+            actionMode?.invalidate()
         })
     }
 
