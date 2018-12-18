@@ -1,5 +1,6 @@
 package com.feliperoriz.multiselectexample.repository.db
 
+import androidx.lifecycle.LiveData
 import androidx.paging.DataSource
 import androidx.room.*
 
@@ -21,4 +22,7 @@ interface NotesDao {
 
     @Query("SELECT * FROM notes")
     fun getNotes(): DataSource.Factory<Int, NoteEntity>
+
+    @Query("SELECT * FROM notes WHERE `key` = :key")
+    fun getNoteLiveData(key: Long): LiveData<NoteEntity>
 }

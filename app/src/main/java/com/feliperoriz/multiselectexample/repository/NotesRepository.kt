@@ -18,6 +18,10 @@ class NotesRepository(private val notesDao: NotesDao) {
         notesDataSource = LivePagedListBuilder(dataSource, 20).build()
     }
 
+    fun getNoteLiveData(key: Long): LiveData<NoteEntity> {
+        return notesDao.getNoteLiveData(key)
+    }
+
     fun addCompletable(title: String, body: String): Completable {
         val note = NoteEntity(title = title, body = body)
         return notesDao.insertCompletable(note)

@@ -20,7 +20,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".detail.NoteDetailActivity"
+        <activity android:name=".detail.view.NoteDetailActivity"
             android:screenOrientation="portrait"/>
 
         <activity android:name=".add.view.NoteAddActivity"

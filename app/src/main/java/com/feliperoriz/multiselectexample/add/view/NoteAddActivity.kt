@@ -13,7 +13,6 @@ import com.feliperoriz.multiselectexample.repository.db.NotesDatabase
 import com.google.android.material.snackbar.Snackbar
 
 import kotlinx.android.synthetic.main.activity_note_add.*
-import kotlinx.android.synthetic.main.note_row_item.*
 
 class NoteAddActivity: AppCompatActivity() {
 
@@ -51,7 +50,7 @@ class NoteAddActivity: AppCompatActivity() {
                 val description = description_edit_text.text?.toString() ?: ""
 
                 if (title.isNullOrEmpty()) {
-                    Snackbar.make(root_view, "Title cannot be empty", Snackbar.LENGTH_SHORT)
+                    Snackbar.make(root_view, "Title cannot be empty", Snackbar.LENGTH_SHORT).show()
                 } else {
                     viewModel.addNote(title, description) {
                         finish()

@@ -14,15 +14,21 @@ class NoteViewHolder(override val containerView: View): RecyclerView.ViewHolder(
                         crossinline onNoteBulkSelected: (NoteEntity, Boolean) -> Unit) {
 
         title_view.text = note.title
-        description_view.text = note.body
+
+        val body = if (note.body.isNotEmpty()) note.body else "No description"
+        description_view.text = body
 
         if (isBulkModeOn) {
             bulk_checkbox.visibility = View.VISIBLE
-            root_view.alpha = 0.4f
+            title_view.alpha = 0.4f
+            description_view.alpha = 0.4f
+
             root_view.setOnClickListener { onNoteBulkSelected(note, !bulk_checkbox.isChecked) }
         } else {
             bulk_checkbox.visibility = View.GONE
-            root_view.alpha = 1f
+
+            title_view.alpha = 1f
+            description_view.alpha = 1f
             root_view.setOnClickListener { onClickNote(note) }
         }
 

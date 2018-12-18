@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 
 import com.feliperoriz.multiselectexample.R
 import com.feliperoriz.multiselectexample.add.view.NoteAddActivity
-import com.feliperoriz.multiselectexample.detail.NoteDetailActivity
+import com.feliperoriz.multiselectexample.detail.view.NoteDetailActivity
 import com.feliperoriz.multiselectexample.list.view.recyclerview.NotesAdapter
 import com.feliperoriz.multiselectexample.list.view.recyclerview.NotesItemCallback
 import com.feliperoriz.multiselectexample.list.viewmodel.NotesListViewModel
@@ -52,10 +52,10 @@ class NotesListActivity : AppCompatActivity() {
             adapter = notesAdapter
         }
 
-//        notesAdapter.onClickNote = { note ->
-//            val intent = NoteDetailActivity.getIntent(this, note.key!!)
-//            startActivity(intent)
-//        }
+        notesAdapter.onClickNote = { note ->
+            val intent = NoteDetailActivity.getIntent(this, note.key!!)
+            startActivity(intent)
+        }
 
         add_fab.setOnClickListener {
             val intent = Intent(this, NoteAddActivity::class.java)
